@@ -99,8 +99,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
     constructor(IERC20[] memory assets, string memory name, string memory symbol) public ERC20(name, symbol) {
-        require(bytes(name).length > 0, "Mooniswap: name is empty");
-        require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
+        require(bytes(name).length > 0, "Toroswap: name is empty");
+        require(bytes(symbol).length > 0, "Toroswap: symbol is empty");
         require(assets.length == 2, "Toroswap: only 2 tokens allowed");
 
         factory = IFactory(msg.sender);
@@ -167,7 +167,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
 
         uint256 fairSupplyCached = fairSupply;
         for (uint i = 0; i < amounts.length; i++) {
-            require(amounts[i] > 0, "Mooniswap: amount is zero");
+            require(amounts[i] > 0, "Toroswap: amount is zero");
             uint256 amount = (totalSupply == 0) ? amounts[i] :
                 realBalances[i].mul(fairSupplyCached).add(totalSupply - 1).div(totalSupply);
             require(amount >= minAmounts[i], "Toroswap: minAmount not reached");
@@ -226,7 +226,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         src.uniTransferFromSenderToThis(amount);
         uint256 confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
         result = _getReturn(src, dst, confirmed, srcAdditionBalance, dstRemovalBalance);
-        require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
+        require(result > 0 && result >= minReturn, "Toroswap: return is not enough");
         dst.uniTransfer(msg.sender, result);
 
         // Update virtual balances to the same direction only at imbalanced state
