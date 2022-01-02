@@ -101,12 +101,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     constructor(IERC20[] memory assets, string memory name, string memory symbol) public ERC20(name, symbol) {
         require(bytes(name).length > 0, "Mooniswap: name is empty");
         require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
-        require(assets.length == 2, "Mooniswap: only 2 tokens allowed");
+        require(assets.length == 2, "Toroswap: only 2 tokens allowed");
 
         factory = IFactory(msg.sender);
         tokens = assets;
         for (uint i = 0; i < assets.length; i++) {
-            require(!isToken[assets[i]], "Mooniswap: duplicate tokens");
+            require(!isToken[assets[i]], "Toroswap: duplicate tokens");
             isToken[assets[i]] = true;
         }
     }
@@ -170,7 +170,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             require(amounts[i] > 0, "Mooniswap: amount is zero");
             uint256 amount = (totalSupply == 0) ? amounts[i] :
                 realBalances[i].mul(fairSupplyCached).add(totalSupply - 1).div(totalSupply);
-            require(amount >= minAmounts[i], "Mooniswap: minAmount not reached");
+            require(amount >= minAmounts[i], "Toroswap: minAmount not reached");
 
             _tokens[i].uniTransferFromSenderToThis(amount);
             if (totalSupply > 0) {
@@ -186,7 +186,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             }
         }
 
-        require(fairSupply > 0, "Mooniswap: result is not enough");
+        require(fairSupply > 0, "Toroswap: result is not enough");
         _mint(msg.sender, fairSupply);
 
         emit Deposited(msg.sender, fairSupply);
@@ -202,7 +202,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             uint256 preBalance = token.uniBalanceOf(address(this));
             uint256 value = preBalance.mul(amount).div(totalSupply);
             token.uniTransfer(msg.sender, value);
-            require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
+            require(i >= minReturns.length || value >= minReturns[i], "Toroswap: result is not enough");
 
             virtualBalancesForAddition[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
             virtualBalancesForRemoval[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
@@ -212,7 +212,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     }
 
     function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external payable nonReentrant returns(uint256 result) {
-        require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
+        require(msg.value == (src.isETH() ? amount : 0), "Toroswap: wrong value usage");
 
         Balances memory balances = Balances({
             src: src.uniBalanceOf(address(this)).sub(src.isETH() ? msg.value : 0),
@@ -270,9 +270,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         token.uniTransfer(msg.sender, amount);
 
         for (uint i = 0; i < balances.length; i++) {
-            require(tokens[i].uniBalanceOf(address(this)) >= balances[i], "Mooniswap: access denied");
+            require(tokens[i].uniBalanceOf(address(this)) >= balances[i], "Toroswap: access denied");
         }
-        require(balanceOf(address(this)) >= BASE_SUPPLY, "Mooniswap: access denied");
+        require(balanceOf(address(this)) >= BASE_SUPPLY, "Toroswap: access denied");
     }
 
     function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
